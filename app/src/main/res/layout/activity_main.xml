@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/btRetrofit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Retrofit" />
+
+    <Button
+        android:id="@+id/btRetrofitOrdenado"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Retrofit Ordenado" />
+
+    <Button
+        android:id="@+id/btDagger"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Dagger" />
+
+    <Button
+        android:id="@+id/btDaggerOrdenado"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Dagger Ordenado" />
+
+    <Button
+        android:id="@+id/btRxBasico"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="RxBasico" />
+
+    <Button
+        android:id="@+id/btRxActivity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="btRxActivty" />
+
+    <Button
+        android:id="@+id/btRxOrdenadoActivity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="btRxOrdenadoActivty" />
+
+</LinearLayout>
