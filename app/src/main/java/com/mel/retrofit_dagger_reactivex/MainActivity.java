@@ -26,4 +26,13 @@ public class MainActivity extends AppCompatActivity {
     public void retrofitOrdenado(){
         startActivity(new Intent(this,RetrofitOrdenadoActivity.class));
     }
+
+    @OnClick(R.id.btDagger)
+    public void dagger(){
+        startActivity(new Intent(this,DaggerActivity.class));
+    }
+    @OnClick(R.id.btDaggerOrdenado)
+    public void daggerOrdenado(){
+        startActivity(new Intent(this,DaggerOrdenadoActivity.class));
+    }
 }

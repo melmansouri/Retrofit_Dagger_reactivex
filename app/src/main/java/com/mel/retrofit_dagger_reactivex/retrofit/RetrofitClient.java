@@ -7,6 +7,15 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+
+/**
+ * Con el singleton nos ahorramos el tener que instanciar retrofit en todas las
+ * activities en las que queramos hacer peticiones al ws y asi evitar desperdiciar memoria ya que puede que esas activities no
+ * se cierren y esas instancias permanezcan en memoria.
+ * Hay una mejor opcion a usar un singleton y es usar la inyeccion de dependencia como ahora que sera con dagger2.
+ * La razon esta en que es muy complicado de testear debido a que guarda siempre la misma referencia y durante el test no podemos cambiar
+ * cuando lo necesitamos. Por supuesto siempre hay trucos pero dagger2 nos soluciona este problema
+ */
 public class RetrofitClient {
 
     private static RetrofitClient instance;

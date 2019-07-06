@@ -9,16 +9,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.mel.retrofit_dagger_reactivex.adapter.PersonajeAdapter;
 import com.mel.retrofit_dagger_reactivex.common.Constants;
+import com.mel.retrofit_dagger_reactivex.dependency_inyection.MyApp;
 import com.mel.retrofit_dagger_reactivex.model.Data;
 import com.mel.retrofit_dagger_reactivex.model.Personaje;
-import com.mel.retrofit_dagger_reactivex.retrofit.RetrofitClient;
 import com.mel.retrofit_dagger_reactivex.retrofit.RetrofitService;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -30,52 +31,39 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class RetrofitOrdenadoActivity extends AppCompatActivity {
+/**
+ * Tenemos el codigo muy acomplado por el uso de new. Por ello comop regla general debemos evitar usar la palabra new en nuestras clases
+ * como esto: okHttpClient = new OkHttpClient.Builder();
+ * si queremos cambiar el objeto okHttpClient deberemos tocar en todas las activities que hace uso de retrofit.
+ * Por ello segun el 5ª principio de SOLID, el principio de inyeccion de dependencia, se debe de depender de abtracciones y no de implementaciones
+ * que es como lo estamos haciendo hasta la fecha. Asi que las inyeccion de dependiacias es uno de los metodos que nos ofrecen solucion a este principio
+ * La definicion de este principio es que las clases no deben de crear los objetos si no hay que suministrarselos mediante dagger
+ * Hacemos uso eficiente de la memoria mediante el uso de dagger y tambien hemos implementado el 5ª principio de SOLID
+ * es decir que ahora dependemos de una abstraccion y no de la implementacion de la clase DaggerOrdenadoActivity
+ */
+public class DaggerOrdenadoActivity extends AppCompatActivity {
 
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
-    private RetrofitService retrofitService;
-    private Retrofit retrofit;
     private List<Personaje> personajes;
     private PersonajeAdapter adapter;
-    private HttpLoggingInterceptor httpLoggingInterceptor;
-    private OkHttpClient.Builder okHttpClient;
+    @Inject
+    RetrofitService retrofitService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_retrofit_ordenado);
         ButterKnife.bind(this);
-        initRetrofit();
+        setUpDagger();
         initRecyclerView();
         request();
     }
 
-    /**
-     * Tenemos el codigo muy acomplado por el uso de new. Por ello comop regla general debemos evitar usar la palabra new en nuestras clases
-     * como esto: okHttpClient = new OkHttpClient.Builder();
-     * si queremos cambiar el objeto okHttpClient deberemos tocar en todas las activities que hace uso de retrofit.
-     * Por ello segun el 5ª principio de SOLID, el principio de inyeccion de dependencia, se debe de depender de abtracciones y no de implementaciones
-     * que es como lo estamos haciendo hasta la fecha. Asi que las inyeccion de dependiacias es uno de los metodos que nos ofrecen solucion a este principio
-     * La definicion de este principio es que las clases no deben de crear los objetos si no hay que suministrarselos mediante dagger
-     *
-     */
-    private void initRetrofit(){
-        /*retrofitClient =RetrofitClient.getInstance();
-        retrofitService=retrofitClient.getRetrofitService();*/
-        httpLoggingInterceptor = new HttpLoggingInterceptor();
-        httpLoggingInterceptor.level(HttpLoggingInterceptor.Level.BODY);
-        okHttpClient = new OkHttpClient.Builder();
-        okHttpClient.addInterceptor(httpLoggingInterceptor);
-
-        retrofit= new Retrofit.Builder()
-                .baseUrl(Constants.URL_API)
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(okHttpClient.build())
-                .build();
-
-        retrofitService=retrofit.create(RetrofitService.class);
+    private void setUpDagger() {
+        ((MyApp)getApplication()).getRetrofitComponent().inject(this);
     }
+
     private void initRecyclerView(){
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         personajes=new ArrayList<>();
@@ -93,13 +81,13 @@ public class RetrofitOrdenadoActivity extends AppCompatActivity {
                     adapter.setPersonajes(data.getResults());
                     nextRequest(data.getNext(),data.getResults());
                 }else{
-                    Toast.makeText(RetrofitOrdenadoActivity.this,"Algo ha pasado en el servidor.",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(DaggerOrdenadoActivity.this,"Algo ha pasado en el servidor.",Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<Data> call, Throwable t) {
-                Toast.makeText(RetrofitOrdenadoActivity.this,"Oops algo ha salido mal!!!. Comprueba tu conexión",Toast.LENGTH_SHORT).show();
+                Toast.makeText(DaggerOrdenadoActivity.this,"Oops algo ha salido mal!!!. Comprueba tu conexión",Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -121,13 +109,13 @@ public class RetrofitOrdenadoActivity extends AppCompatActivity {
                     });
                     adapter.setPersonajes(results);
                 }else{
-                    Toast.makeText(RetrofitOrdenadoActivity.this,"Algo ha pasado en el servidor.",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(DaggerOrdenadoActivity.this,"Algo ha pasado en el servidor.",Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<Data> call, Throwable t) {
-                Toast.makeText(RetrofitOrdenadoActivity.this,"Oops algo ha salido mal!!!. Comprueba tu conexión",Toast.LENGTH_SHORT).show();
+                Toast.makeText(DaggerOrdenadoActivity.this,"Oops algo ha salido mal!!!. Comprueba tu conexión",Toast.LENGTH_SHORT).show();
             }
         });
     }
