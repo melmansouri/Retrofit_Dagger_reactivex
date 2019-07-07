@@ -16,13 +16,13 @@ import io.reactivex.schedulers.Schedulers;
 
 /**
  * La programacion reactiva: programacion asincrona basada en eventos. Se basa en un flujo de datos asincronos
- * por lo tanto pueden ser observados y cuando se emitan esos datos se llevara a cabo una opcion con ellos
+ * por lo tanto pueden ser observados y cuando se emitan esos datos se llevara a cabo una operacion con ellos
  * Los flujos de datos pueden ser llamadas a ws, cambios de variables, eventos de click, de una bd , etc
  * Se compone de los observables que son una fuente de datos que emite datos, los observers que reciben esos datos que son emitidos por el observable
  * Un observable puede ser observado por varios observers. Luego estan los suscriptores que permiten vincular un observable con un observer
  * Los operator modifican los datos que son emitidos por los observables antes de que el observador los reciba
  * Por ejemplo cuando ordenamos en el onResponse de Retrofit en RetrofitOrdenadoActivity eso ya actua en hilo principal y esa operacion en este caso no tarda mucho
- * pero puede dar el caso que si, en ese caso habria que crear hilos para evitarlo para manejar esa operacion. Mediante RXJava evitamos el crearnos esos hilos
+ * pero puede dar el caso que si, por ello habria que crear hilos para evitarlo para manejar esa operacion. Mediante RXJava evitamos el crearnos esos hilos
  * y el tener que manejarlos y permite que todos estos tipos de acciones que queremos antes de que se muestren en pantalla se hagan en hilos en background
  * dejando libre el hilo principal
  * Otro de los componentes es el schedule que decide el hilo en el que el observable debe emitir los datos y tambien el hilo en el que el observador recibe esos datos
@@ -81,7 +81,7 @@ public class RXBaseActivity extends AppCompatActivity {
 
             @Override
             public void onNext(String s) {
-                Log.d("TAG1","OnNext: "+s+" Hilo: "+Thread.currentThread().getName())
+                Log.d("TAG1","OnNext: "+s+" Hilo: "+Thread.currentThread().getName());
             }
 
             @Override
@@ -91,7 +91,7 @@ public class RXBaseActivity extends AppCompatActivity {
 
             @Override
             public void onComplete() {
-                Log.d("TAG1","OnComplete Hilo: "+Thread.currentThread().getName())
+                Log.d("TAG1","OnComplete Hilo: "+Thread.currentThread().getName());
             }
         };
     }

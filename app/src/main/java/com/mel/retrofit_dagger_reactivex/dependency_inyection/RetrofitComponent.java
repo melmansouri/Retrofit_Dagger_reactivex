@@ -2,6 +2,8 @@ package com.mel.retrofit_dagger_reactivex.dependency_inyection;
 
 import com.mel.retrofit_dagger_reactivex.DaggerActivity;
 import com.mel.retrofit_dagger_reactivex.DaggerOrdenadoActivity;
+import com.mel.retrofit_dagger_reactivex.RxRetrofitDaggerActivity;
+import com.mel.retrofit_dagger_reactivex.RxRetrofitDaggerOrdenadoActivity;
 
 import javax.inject.Singleton;
 
@@ -16,4 +18,6 @@ import dagger.Component;
 public interface RetrofitComponent {
     void inject(DaggerActivity daggerActivity);
     void inject(DaggerOrdenadoActivity daggerOrdenadoActivity);
+    void inject(RxRetrofitDaggerActivity RxDaggerActivity);
+    void inject(RxRetrofitDaggerOrdenadoActivity rxRetrofitDaggerOrdenadoActivity);
 }

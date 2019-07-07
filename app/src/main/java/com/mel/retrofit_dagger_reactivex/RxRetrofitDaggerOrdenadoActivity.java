@@ -23,13 +23,9 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Tenemos el codigo muy acomplado por el uso de new. Por ello comop regla general debemos evitar usar la palabra new en nuestras clases
@@ -41,7 +37,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Hacemos uso eficiente de la memoria mediante el uso de dagger y tambien hemos implementado el 5ª principio de SOLID
  * es decir que ahora dependemos de una abstraccion y no de la implementacion de la clase DaggerOrdenadoActivity
  */
-public class DaggerOrdenadoActivity extends AppCompatActivity {
+public class RxRetrofitDaggerOrdenadoActivity extends AppCompatActivity {
 
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
@@ -53,7 +49,7 @@ public class DaggerOrdenadoActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_retrofit_ordenado);
+        setContentView(R.layout.activity_rx_retrofit_dagger_ordenado_pagination_swipe_refresh);
         ButterKnife.bind(this);
         setUpDagger();
         initRecyclerView();
@@ -81,13 +77,13 @@ public class DaggerOrdenadoActivity extends AppCompatActivity {
                     adapter.setPersonajes(data.getResults());
                     nextRequest(data.getNext(),data.getResults());
                 }else{
-                    Toast.makeText(DaggerOrdenadoActivity.this,"Algo ha pasado en el servidor.",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RxRetrofitDaggerOrdenadoActivity.this,"Algo ha pasado en el servidor.",Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<Data> call, Throwable t) {
-                Toast.makeText(DaggerOrdenadoActivity.this,"Oops algo ha salido mal!!!. Comprueba tu conexión",Toast.LENGTH_SHORT).show();
+                Toast.makeText(RxRetrofitDaggerOrdenadoActivity.this,"Oops algo ha salido mal!!!. Comprueba tu conexión",Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -109,13 +105,13 @@ public class DaggerOrdenadoActivity extends AppCompatActivity {
                     });
                     adapter.setPersonajes(results);
                 }else{
-                    Toast.makeText(DaggerOrdenadoActivity.this,"Algo ha pasado en el servidor.",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RxRetrofitDaggerOrdenadoActivity.this,"Algo ha pasado en el servidor.",Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<Data> call, Throwable t) {
-                Toast.makeText(DaggerOrdenadoActivity.this,"Oops algo ha salido mal!!!. Comprueba tu conexión",Toast.LENGTH_SHORT).show();
+                Toast.makeText(RxRetrofitDaggerOrdenadoActivity.this,"Oops algo ha salido mal!!!. Comprueba tu conexión",Toast.LENGTH_SHORT).show();
             }
         });
     }

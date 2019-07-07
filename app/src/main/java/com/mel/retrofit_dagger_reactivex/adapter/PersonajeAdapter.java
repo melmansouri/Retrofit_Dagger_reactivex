@@ -20,9 +20,12 @@ import butterknife.ButterKnife;
 
 public class PersonajeAdapter extends Adapter<PersonajeAdapter.PersonajeViewHolder> {
     private List<Personaje> personajes;
+    private int totalElementInServer;
 
-    public PersonajeAdapter(List<Personaje> personajes) {
+
+    public PersonajeAdapter(List<Personaje> personajes,int totalElementInServer) {
         this.personajes = personajes;
+        this.totalElementInServer=totalElementInServer;
     }
 
     @NonNull
@@ -39,6 +42,19 @@ public class PersonajeAdapter extends Adapter<PersonajeAdapter.PersonajeViewHold
         holder.tvBirth.setText(personaje.getBirthYear());
         holder.tvEyeColor.setText(personaje.getEyeColor());
         holder.tvHeight.setText(personaje.getHeight());
+    }
+
+    /**
+     * Aqui diferenciaremos cuando el elemento o vista de la lista
+     * tiene que ser, el que contenga los datos que obtenemos del ws o
+     * el del progressBar
+     * @param position
+     * @return
+     */
+    @Override
+    public int getItemViewType(int position) {
+
+        return super.getItemViewType(position);
     }
 
     @Override

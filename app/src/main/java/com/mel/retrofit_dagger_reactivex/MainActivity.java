@@ -40,4 +40,10 @@ public class MainActivity extends AppCompatActivity {
     public void rxBasico(){
         startActivity(new Intent(this,RXBaseActivity.class));
     }
+
+    @OnClick(R.id.btRxActivity)
+    public void rxActivity(){
+        startActivity(new Intent(this,RxRetrofitDaggerActivity.class));
+    }
+
 }

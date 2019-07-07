@@ -24,6 +24,7 @@
         </activity>
         <activity android:name=".DaggerActivity" />
         <activity android:name=".DaggerOrdenadoActivity" />
+        <activity android:name=".RxRetrofitDaggerActivity" />
     </application>
 
 </manifest>

@@ -10,6 +10,7 @@ import dagger.Provides;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
@@ -41,11 +42,18 @@ public class RetrofitModule {
 
     @Singleton
     @Provides
-    Retrofit provideRetrofit(OkHttpClient okHttpClient,GsonConverterFactory gsonConverterFactory){
+    RxJava2CallAdapterFactory provideRxJava2CallAdapterFactory(){
+        return RxJava2CallAdapterFactory.create();
+    }
+
+    @Singleton
+    @Provides
+    Retrofit provideRetrofit(OkHttpClient okHttpClient,GsonConverterFactory gsonConverterFactory,RxJava2CallAdapterFactory rxJava2CallAdapterFactory){
         return new Retrofit.Builder()
                 .baseUrl(Constants.URL_API)
                 .addConverterFactory(gsonConverterFactory)
                 .client(okHttpClient)
+                .addCallAdapterFactory(rxJava2CallAdapterFactory)//Con esto ahora nuestra peticion en retrofit puede devolver un observable
                 .build();
     }
 
