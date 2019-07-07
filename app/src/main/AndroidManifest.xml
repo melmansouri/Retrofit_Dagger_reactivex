@@ -3,6 +3,7 @@
     package="com.mel.retrofit_dagger_reactivex">
 
     <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:name=".dependency_inyection.MyApp"
         android:allowBackup="true"
@@ -11,7 +12,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".RetrofitOrdenadoActivity"></activity>
+        <activity android:name=".RXBaseActivity"></activity>
+        <activity android:name=".RetrofitOrdenadoActivity" />
         <activity android:name=".RetrofitActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>

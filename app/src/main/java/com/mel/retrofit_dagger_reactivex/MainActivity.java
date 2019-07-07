@@ -35,4 +35,9 @@ public class MainActivity extends AppCompatActivity {
     public void daggerOrdenado(){
         startActivity(new Intent(this,DaggerOrdenadoActivity.class));
     }
+
+    @OnClick(R.id.btRxBasico)
+    public void rxBasico(){
+        startActivity(new Intent(this,RXBaseActivity.class));
+    }
 }
