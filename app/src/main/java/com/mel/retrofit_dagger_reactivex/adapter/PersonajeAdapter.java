@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,30 +19,38 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class PersonajeAdapter extends Adapter<PersonajeAdapter.PersonajeViewHolder> {
+public class PersonajeAdapter extends Adapter<PersonajeAdapter.BasicViewHolder> {
     private List<Personaje> personajes;
     private int totalElementInServer;
+    private int NORMAL_VIEW=0;
+    private int LOADING_VIEW=1;
 
 
-    public PersonajeAdapter(List<Personaje> personajes,int totalElementInServer) {
+    public PersonajeAdapter(List<Personaje> personajes) {
         this.personajes = personajes;
-        this.totalElementInServer=totalElementInServer;
     }
 
     @NonNull
     @Override
-    public PersonajeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public BasicViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_personaje, parent, false);
-        return new PersonajeViewHolder(view);
+        BasicViewHolder basicViewHolder=new PersonajeViewHolder(view);
+        if (viewType==LOADING_VIEW){
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_progress, parent, false);
+            basicViewHolder=new LoadingViewHolder(view);
+        }
+        return basicViewHolder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull PersonajeViewHolder holder, int position) {
-        Personaje personaje=personajes.get(position);
-        holder.tvName.setText(personaje.getName());
-        holder.tvBirth.setText(personaje.getBirthYear());
-        holder.tvEyeColor.setText(personaje.getEyeColor());
-        holder.tvHeight.setText(personaje.getHeight());
+    public void onBindViewHolder(@NonNull BasicViewHolder holder, int position) {
+        if (holder instanceof PersonajeViewHolder){
+            Personaje personaje=personajes.get(position);
+            ((PersonajeViewHolder)holder).tvName.setText(personaje.getName());
+            ((PersonajeViewHolder)holder).tvBirth.setText(personaje.getBirthYear());
+            ((PersonajeViewHolder)holder).tvEyeColor.setText(personaje.getEyeColor());
+            ((PersonajeViewHolder)holder).tvHeight.setText(personaje.getHeight());
+        }
     }
 
     /**
@@ -53,8 +62,10 @@ public class PersonajeAdapter extends Adapter<PersonajeAdapter.PersonajeViewHold
      */
     @Override
     public int getItemViewType(int position) {
-
-        return super.getItemViewType(position);
+        if (position==personajes.size()-1){
+            return LOADING_VIEW;
+        }
+        return NORMAL_VIEW;
     }
 
     @Override
@@ -67,7 +78,7 @@ public class PersonajeAdapter extends Adapter<PersonajeAdapter.PersonajeViewHold
         notifyDataSetChanged();
     }
 
-    static class PersonajeViewHolder extends RecyclerView.ViewHolder {
+    static class PersonajeViewHolder extends BasicViewHolder {
         @BindView(R.id.tvName)
         TextView tvName;
         @BindView(R.id.tvHeight)
@@ -79,6 +90,22 @@ public class PersonajeAdapter extends Adapter<PersonajeAdapter.PersonajeViewHold
         public PersonajeViewHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this,itemView);
+        }
+    }
+    static class LoadingViewHolder extends BasicViewHolder{
+        @BindView(R.id.progressBar)
+        ProgressBar progressBar;
+
+        public LoadingViewHolder(@NonNull View itemView) {
+            super(itemView);
+            ButterKnife.bind(this,itemView);
+        }
+    }
+
+    static class BasicViewHolder extends RecyclerView.ViewHolder{
+
+        public BasicViewHolder(@NonNull View itemView) {
+            super(itemView);
         }
     }
 }

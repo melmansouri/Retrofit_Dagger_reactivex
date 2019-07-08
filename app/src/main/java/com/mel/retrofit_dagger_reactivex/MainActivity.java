@@ -46,4 +46,9 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(this,RxRetrofitDaggerActivity.class));
     }
 
+    @OnClick(R.id.btRxOrdenadoActivity)
+    public void rxOrdenadoActivity(){
+        startActivity(new Intent(this,RxRetrofitDaggerOrdenadoActivity.class));
+    }
+
 }
