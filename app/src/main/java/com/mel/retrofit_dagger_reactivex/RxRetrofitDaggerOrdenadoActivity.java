@@ -1,8 +1,11 @@
 package com.mel.retrofit_dagger_reactivex;
 
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,6 +18,7 @@ import com.mel.retrofit_dagger_reactivex.model.Personaje;
 import com.mel.retrofit_dagger_reactivex.retrofit.RetrofitService;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -23,6 +27,13 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -45,6 +56,9 @@ public class RxRetrofitDaggerOrdenadoActivity extends AppCompatActivity {
     private PersonajeAdapter adapter;
     @Inject
     RetrofitService retrofitService;
+    private boolean isLoadingNewData = false;
+    private Disposable disposable;
+    private String lastPersonajeUrlNext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,62 +71,117 @@ public class RxRetrofitDaggerOrdenadoActivity extends AppCompatActivity {
     }
 
     private void setUpDagger() {
-        ((MyApp)getApplication()).getRetrofitComponent().inject(this);
+        ((MyApp) getApplication()).getRetrofitComponent().inject(this);
     }
 
-    private void initRecyclerView(){
+    private void initRecyclerView() {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        personajes=new ArrayList<>();
-        adapter =new PersonajeAdapter(personajes);
+        personajes = new ArrayList<>();
+        adapter = new PersonajeAdapter(personajes);
         recyclerView.setAdapter(adapter);
-    }
-
-    private void request(){
-        Call<Data> request=retrofitService.getPersonajes();
-        request.enqueue(new Callback<Data>() {
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onResponse(Call<Data> call, Response<Data> response) {
-                if (response.isSuccessful()){
-                    Data data=response.body();
-                    adapter.setPersonajes(data.getResults());
-                    nextRequest(data.getNext(),data.getResults());
-                }else{
-                    Toast.makeText(RxRetrofitDaggerOrdenadoActivity.this,"Algo ha pasado en el servidor.",Toast.LENGTH_SHORT).show();
-                }
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                Log.d("listaY", "Estado scroll: " + newState);
             }
 
             @Override
-            public void onFailure(Call<Data> call, Throwable t) {
-                Toast.makeText(RxRetrofitDaggerOrdenadoActivity.this,"Oops algo ha salido mal!!!. Comprueba tu conexión",Toast.LENGTH_SHORT).show();
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                //Log.d("listaY",dy+"");
+                if ((dy > 0 && ((PersonajeAdapter) recyclerView.getAdapter()).isEndScroll()) && !isLoadingNewData) {
+                    Log.d("listaY", "END");
+                    nextRequest(lastPersonajeUrlNext);
+                }
             }
         });
     }
 
-    private void nextRequest(String next, List<Personaje> results) {
-        String endPoint=next.substring(Constants.URL_API.length());
-        Call<Data> request=retrofitService.getPersonajes(endPoint);
-        request.enqueue(new Callback<Data>() {
+    private void request() {
+        retrofitService.getPersonajesObservable().subscribeOn(Schedulers.io())
+                /*.flatMap(new Function<Data, ObservableSource<Data>>() {
+
+                    @Override
+                    public ObservableSource<Data> apply(Data data) throws Exception {
+                        personajes = data.getResults();
+                        //SE ejecuta en el hilo secundario
+                        return retrofitService.getPersonajesObservable(data.getNext()).subscribeOn(Schedulers.io());
+                    }
+                }).map(new Function<Data, Data>() {
             @Override
-            public void onResponse(Call<Data> call, Response<Data> response) {
-                if (response.isSuccessful()){
-                    Data data=response.body();
-                    results.addAll(data.getResults());
-                    Collections.sort(results, new Comparator<Personaje>() {
-                        @Override
-                        public int compare(Personaje o1, Personaje o2) {
-                            return o1.getName().compareTo(o2.getName());
-                        }
-                    });
-                    adapter.setPersonajes(results);
-                }else{
-                    Toast.makeText(RxRetrofitDaggerOrdenadoActivity.this,"Algo ha pasado en el servidor.",Toast.LENGTH_SHORT).show();
-                }
+            public Data apply(Data data) throws Exception {
+                personajes.addAll(data.getResults());
+                Collections.sort(personajes,new Comparator<Personaje>() {
+                    @Override
+                    public int compare(Personaje o1, Personaje o2) {
+                        return o1.getName().compareTo(o2.getName());
+                    }
+                });
+                data.setResults(personajes);
+                return data;
+            }
+        })*/.observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<Data>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+                disposable=d;
             }
 
             @Override
-            public void onFailure(Call<Data> call, Throwable t) {
-                Toast.makeText(RxRetrofitDaggerOrdenadoActivity.this,"Oops algo ha salido mal!!!. Comprueba tu conexión",Toast.LENGTH_SHORT).show();
+            public void onNext(Data r) {
+                lastPersonajeUrlNext=r.getNext();
+                personajes = r.getResults();
+                adapter.setPersonajes(personajes);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+
             }
         });
+    }
+
+    private void nextRequest(String next) {
+        if (TextUtils.isEmpty(next)){
+            return;
+        }
+        String endPoint = next.substring(Constants.URL_API.length());
+        retrofitService.getPersonajesObservable(endPoint)
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(new Observer<Data>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+                disposable=d;
+            }
+
+            @Override
+            public void onNext(Data data) {
+                lastPersonajeUrlNext=data.getNext();
+                personajes.addAll(data.getResults());
+                adapter.setPersonajes(personajes);
+                isLoadingNewData=false;
+            }
+
+            @Override
+            public void onError(Throwable e) {
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        disposable.dispose();
     }
 }

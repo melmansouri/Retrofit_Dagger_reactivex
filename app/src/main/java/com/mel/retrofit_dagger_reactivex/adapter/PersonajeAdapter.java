@@ -24,6 +24,7 @@ public class PersonajeAdapter extends Adapter<PersonajeAdapter.BasicViewHolder> 
     private int totalElementInServer;
     private int NORMAL_VIEW=0;
     private int LOADING_VIEW=1;
+    private boolean isEndScroll;
 
 
     public PersonajeAdapter(List<Personaje> personajes) {
@@ -50,6 +51,9 @@ public class PersonajeAdapter extends Adapter<PersonajeAdapter.BasicViewHolder> 
             ((PersonajeViewHolder)holder).tvBirth.setText(personaje.getBirthYear());
             ((PersonajeViewHolder)holder).tvEyeColor.setText(personaje.getEyeColor());
             ((PersonajeViewHolder)holder).tvHeight.setText(personaje.getHeight());
+            isEndScroll=false;
+        }else {
+            isEndScroll=true;
         }
     }
 
@@ -76,6 +80,10 @@ public class PersonajeAdapter extends Adapter<PersonajeAdapter.BasicViewHolder> 
     public void setPersonajes(List<Personaje> personajesList){
         personajes=personajesList;
         notifyDataSetChanged();
+    }
+
+    public boolean isEndScroll() {
+        return isEndScroll;
     }
 
     static class PersonajeViewHolder extends BasicViewHolder {
